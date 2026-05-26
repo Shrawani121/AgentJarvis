@@ -1,0 +1,8 @@
+openai
+python-dotenv
+
+#MY_READ
+openai — OpenAI's Python SDK for interacting with GPT models, embeddings, DALL·E, Whisper, etc.
+python-dotenv — Loads environment variables from a .env file into os.environ
+
+ #create(): sends request and gets answer
