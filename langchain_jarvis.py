@@ -4,6 +4,7 @@ import os
 from dotenv import load_dotenv
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
 load_dotenv()
 
 # ---- LLM Setup ----
@@ -12,6 +13,10 @@ llm = ChatGroq(
     model="llama-3.1-8b-instant"
 )
 
+
+# ---- Output Parser ----
+parser = StrOutputParser()
+
 # ---- Prompt Template ----
 prompt = ChatPromptTemplate.from_messages([
     ("system", "You are a helpful assistant named {name}."),
@@ -19,12 +24,29 @@ prompt = ChatPromptTemplate.from_messages([
 ])
 
 # ---- Chain ----
-chain = prompt | llm
+chain = prompt | llm | parser
 
-# ---- Test it ----
-response = chain.invoke({
-    "name": "Jarvis",
-    "user_input": "Hey! Who are you?"
-})
+# ---- Chat Loop ----
+def chat_loop():
+    print("🤖 Jarvis (LangChain) is ready! Type 'quit' to exit.\n")
 
-print(response.content)
+    while True:
+        user_input = input("You: ")
+
+        if user_input.lower() == "quit":
+            print("Jarvis: Goodbye!")
+            break
+
+        if user_input.strip() == "":
+            print("Jarvis: Please say something!\n")
+            continue
+
+        response = chain.invoke({
+            "name": "Jarvis",
+            "user_input": user_input
+        })
+
+        print(f"Jarvis: {response}\n")
+
+if __name__ == "__main__":
+    chat_loop()
