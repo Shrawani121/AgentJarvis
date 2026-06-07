@@ -1,10 +1,12 @@
 # langchain_jarvis.py
 
 import os
+from urllib import response
 from dotenv import load_dotenv
 from langchain_groq import ChatGroq
-from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.output_parsers import StrOutputParser
+from langchain_core.messages import HumanMessage, AIMessage
 load_dotenv()
 
 # ---- LLM Setup ----
@@ -20,11 +22,16 @@ parser = StrOutputParser()
 # ---- Prompt Template ----
 prompt = ChatPromptTemplate.from_messages([
     ("system", "You are a helpful assistant named {name}."),
+    MessagesPlaceholder(variable_name="history"),
     ("human", "{user_input}")
 ])
 
 # ---- Chain ----
 chain = prompt | llm | parser
+
+# ---- Memory (our history list) ----
+history = []
+
 
 # ---- Chat Loop ----
 def chat_loop():
@@ -43,8 +50,13 @@ def chat_loop():
 
         response = chain.invoke({
             "name": "Jarvis",
+            "history": history, 
             "user_input": user_input
         })
+
+         # save to memory AFTER getting response
+        history.append(HumanMessage(content=user_input))
+        history.append(AIMessage(content=response))
 
         print(f"Jarvis: {response}\n")
 
