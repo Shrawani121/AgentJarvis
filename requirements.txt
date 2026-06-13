@@ -1,5 +1,8 @@
 openai
 python-dotenv
+groq
+langchain
+langchain-groq
 
 #MY_READ
 openai — OpenAI's Python SDK for interacting with GPT models, embeddings, DALL·E, Whisper, etc.
