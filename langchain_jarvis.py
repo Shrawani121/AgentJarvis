@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
+from langchain_core.chains import LLMChain
 load_dotenv()
 
 # ---- LLM Setup ----
@@ -24,7 +25,7 @@ prompt = ChatPromptTemplate.from_messages([
 ])
 
 # ---- Chain ----
-chain = prompt | llm | parser
+chain = LLMChain(llm=llm, prompt=prompt, output_parser=parser)
 
 # ---- Chat Loop ----
 def chat_loop():
