@@ -9,6 +9,7 @@ from langchain_core.messages import HumanMessage, AIMessage
 from langgraph.graph import StateGraph, MessagesState, START, END
 from langgraph.prebuilt import ToolNode
 from pydantic import BaseModel
+from notion_client import Client
 
 load_dotenv()
 
@@ -21,7 +22,6 @@ llm = ChatGroq(
 # ---- Web Search Tool ----
 search = DuckDuckGoSearchRun()
 
-# Pydantic schema — strict input definition
 class SearchInput(BaseModel):
     query: str
 
@@ -30,7 +30,33 @@ def web_search(query: str) -> str:
     """Search the internet for current real-time information and news."""
     return search.run(query)
 
-tools = [web_search]
+# ---- Notion Setup ----
+notion = Client(auth=os.getenv("NOTION_API_KEY"))
+NOTION_PAGE_ID = os.getenv("NOTION_PAGE_ID")
+
+class NotionInput(BaseModel):
+    text: str
+
+@tool(args_schema=NotionInput)
+def save_to_notion(text: str) -> str:
+    """Save information or notes to Notion page."""
+    notion.blocks.children.append(
+        NOTION_PAGE_ID,
+        children=[{
+            "object": "block",
+            "type": "paragraph",
+            "paragraph": {
+                "rich_text": [{
+                    "type": "text",
+                    "text": {"content": text}
+                }]
+            }
+        }]
+    )
+    return "✅ Saved to Notion successfully!"
+
+# ---- Tools List ---- ✅ defined AFTER both tools
+tools = [web_search, save_to_notion]
 
 # ---- Bind tools to LLM ----
 llm_with_tools = llm.bind_tools(tools)
