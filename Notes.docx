@@ -1,0 +1,5 @@
+FAISS = Facebook AI Similarity Search
+
+Built by Facebook/Meta specifically for:
+→ storing millions of number vectors
+→ searching them FAST

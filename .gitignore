@@ -1,0 +1,8 @@
+# Python virtual environment
+.venv/
+
+# Environment files
+.env
+
+# Misc
+super-cheatsheet-machine-learning.pdf
